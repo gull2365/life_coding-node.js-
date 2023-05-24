@@ -5,17 +5,12 @@ var url = require("url"); // url 모듈을 url이라는 이름으로 사용할 �
 var app = http.createServer(function (request, response) {
   var _url = request.url;
   var queryData = url.parse(_url, true).query;
+  var pathname = url.parse(_url, true).pathname;
   var title = queryData.id;
-  console.log(queryData.id);
-  if (_url == "/") {
-    title = "Welcome";
-  }
-  if (_url == "/favicon.ico") {
-    return response.writeHead(404);
-  }
-  response.writeHead(200);
-  fs.readFile(`data/${title}`, "utf-8", function (err, description) {
-    var template = `
+
+  if (pathname === "/") {
+    fs.readFile(`data/${title}`, "utf8", function (err, description) {
+      var template = `
   <!DOCTYPE html>
 <html>
   <head>
@@ -36,7 +31,12 @@ var app = http.createServer(function (request, response) {
   </body>
 </html>
   `;
-    response.end(template);
-  });
+      response.writeHead(200);
+      response.end(template);
+    });
+  } else {
+    response.writeHead(404);
+    response.end("Not found");
+  }
 });
 app.listen(3000);
